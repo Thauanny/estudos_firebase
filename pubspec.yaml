@@ -41,7 +41,9 @@ dependencies:
   dartz: ^0.10.1
   flutter_localization: ^0.1.12
   intl: ^0.17.0
-  firebase_core: 
+  firebase_core: ^2.15.1
+  firebase_messaging: ^14.6.6
+  flutter_local_notifications: ^15.1.0+1
   
 dev_dependencies:
   flutter_test:
