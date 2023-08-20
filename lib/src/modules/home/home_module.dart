@@ -35,6 +35,7 @@ abstract class HomeModule<T extends StatefulWidget> extends State<T> {
         homeRepository: GetIt.I.get<HomeRepository>(),
       ),
     );
+
     //BlOC
     GetIt.I.registerSingleton<HomeBloc>(
       HomeBloc(

@@ -17,6 +17,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       case HomeEventExample:
         _example(emit: emit, useCase: exampleUseCase);
         break;
+
       default:
     }
   }
@@ -25,7 +26,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required Emitter<HomeState> emit,
     required ExampleUseCase useCase,
   }) async {
-    final result = await exampleUseCase();
+    final result = await useCase();
     result.fold(
       (l) => emit(HomeExampleError()),
       (r) => emit(HomeExampleSucess()),

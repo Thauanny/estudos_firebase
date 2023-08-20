@@ -4,6 +4,7 @@ import 'package:flutter_application_1/src/shared/core/abstractions/client_http/c
 import 'package:flutter_application_1/src/shared/core/abstractions/client_http/cliente_http_impl.dart';
 import 'package:flutter_application_1/src/shared/core/abstractions/network_settings/network_settings.dart';
 import 'package:flutter_application_1/src/shared/core/environment/routers/routers.dart';
+import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 
@@ -30,6 +31,8 @@ class AppModule extends StatefulWidget {
         prefixo: prefixo,
       ),
     );
+
+    GetIt.I.registerSingleton<FirebaseBloc>(FirebaseBloc.instance);
   }
 
   NetworkSettings _networkSettings(String? env) {

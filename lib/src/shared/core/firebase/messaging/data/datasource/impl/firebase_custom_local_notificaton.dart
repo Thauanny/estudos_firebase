@@ -1,14 +1,13 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+part of 'firebase_message_remote_datasource.dart';
 
-class CustomLocalNotification {
+class FirebaseCustomLocalNotification {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   late AndroidNotificationChannel channel;
 
-  static final CustomLocalNotification _instance =
-      CustomLocalNotification._singleton();
+  static final FirebaseCustomLocalNotification _instance =
+      FirebaseCustomLocalNotification._singleton();
 
-  CustomLocalNotification._singleton() {
+  FirebaseCustomLocalNotification._singleton() {
     channel = const AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
@@ -63,5 +62,5 @@ class CustomLocalNotification {
     );
   }
 
-  static CustomLocalNotification get instance => _instance;
+  static FirebaseCustomLocalNotification get instance => _instance;
 }

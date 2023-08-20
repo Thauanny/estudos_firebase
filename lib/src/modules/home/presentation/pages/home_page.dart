@@ -1,50 +1,112 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/modules/home/domain/repository/home_repository.dart';
 import 'package:flutter_application_1/src/modules/home/home_module.dart';
+import 'package:flutter_application_1/src/modules/home/presentation/pages/bloc/home_bloc.dart';
+import 'package:flutter_application_1/src/modules/home/presentation/pages/bloc/home_state.dart';
+import 'package:flutter_application_1/src/modules/shared/widgets/custom_visible_remote_widget.dart';
+import 'package:flutter_application_1/src/shared/core/firebase/firebase_remote_config/custom_remote_config.dart';
+import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_bloc.dart';
+import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_state.dart';
 import 'package:get_it/get_it.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends HomeModule<MyHomePage> {
-  late final HomeRepository homeRepository;
+class _HomePageState extends HomeModule<HomePage> {
+  late final HomeBloc homeBloc;
+  late StreamSubscription homeSubscription;
+  late StreamSubscription firebaseSubscription;
+  late final FirebaseBloc firebasebloc;
+  bool _isLoading = false;
   @override
   void initState() {
     super.initState();
-    homeRepository = GetIt.I.get<HomeRepository>();
+    homeBloc = GetIt.I.get<HomeBloc>();
+    firebasebloc = GetIt.I.get<FirebaseBloc>();
+    firebaseSubscription = firebasebloc.stream.listen(onListenFirebase);
+    homeSubscription = homeBloc.stream.listen(onListen);
+  }
+
+  _increment() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await CustomRemoteConfig.instance.forceFetch();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('widget.title'),
+        backgroundColor: CustomRemoteConfig.instance
+                .getValueOrDefault(key: 'isActiveBlue', defaultValue: false)
+            ? Colors.blue
+            : Colors.red,
+        title: const Text('Home'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Text(
+                    CustomRemoteConfig.instance
+                        .getValueOrDefault(
+                          key: 'novaString',
+                          defaultValue: 'Local',
+                        )
+                        .toString(),
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+                const SizedBox(
+                  height: 90,
+                ),
+                CustomVisibleRemoteWidget(
+                  remoteKey: 'showContainer',
+                  defaultValue: false,
+                  child: Container(
+                    color: Colors.blue,
+                    height: 100,
+                    width: 100,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              'teste',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          print(await homeRepository.example());
+          _increment();
         },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        tooltip: 'reload',
+        child: const Icon(Icons.replay_outlined),
       ),
     );
+  }
+
+  void onListen(HomeState state) {
+    switch (state.runtimeType) {
+      default:
+    }
+  }
+
+  void onListenFirebase(FirebaseState state) {
+    switch (state.runtimeType) {
+      case FirebaseStateSubscribedOnMessageOpenAppFirebaseSucess:
+        if (state is FirebaseStateSubscribedOnMessageOpenAppFirebaseSucess) {
+          Navigator.pushNamed(context, state.rota?['secondPage']);
+        }
+        break;
+      default:
+    }
   }
 }
