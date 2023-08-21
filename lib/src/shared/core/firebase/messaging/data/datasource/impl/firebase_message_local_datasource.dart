@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/shared/core/firebase/messaging/data/datasource/firebase_message_datasource.dart';
 import 'package:flutter_application_1/src/shared/core/firebase/messaging/domain/entity/custom_remote_notification.dart';
 import 'package:flutter_application_1/src/shared/helpers/debug_print/debug_print.dart';
@@ -13,7 +14,7 @@ class FirebaseMessageLocalDatasource implements FirebaseMessageDataSource {
   static FirebaseMessageDataSource get instance => _instance;
 
   @override
-  Future<void> inicialize() async {
+  Future<void> inicialize({VoidCallback? callback}) async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       badge: true,

@@ -1,38 +1,38 @@
-import 'package:flutter_application_1/src/shared/core/firebase/messaging/data/datasource/firebase_message_datasource.dart';
-import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_event.dart';
+import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_message_event.dart';
 import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState> {
-  FirebaseBloc._singleton() : super(FirebaseInitial()) {
+class FirebaseMessageBloc
+    extends Bloc<FirebaseMessageEvent, FirebaseMessageState> {
+  FirebaseMessageBloc._singleton() : super(FirebaseMessageInitial()) {
     on(_onEvent);
   }
 
-  static final FirebaseBloc _instance = FirebaseBloc._singleton();
+  static final FirebaseMessageBloc _instance = FirebaseMessageBloc._singleton();
 
-  static FirebaseBloc get instance => _instance;
+  static FirebaseMessageBloc get instance => _instance;
 
   Future<void> _onEvent(
-      FirebaseEvent event, Emitter<FirebaseState> emit) async {
+      FirebaseMessageEvent event, Emitter<FirebaseMessageState> emit) async {
     switch (event.runtimeType) {
-      case FirebaseEventSubscribeOnMessageFirebase:
+      case FirebaseMessageEventReceived:
         _subscribeOnMessageFirebase(
           emit: emit,
         );
         break;
 
-      case FirebaseEventSubscribeOnMessageFirebaseCancel:
+      case FirebaseMessageEventListenCancel:
         _subscribeOnMessageFirebaseCancel(
           emit: emit,
         );
         break;
 
-      case FirebaseEventSubscribeOnMessageOpenAppFirebase:
-        if (event is FirebaseEventSubscribeOnMessageOpenAppFirebase) {
+      case FirebaseMessageEventOpenAppReceived:
+        if (event is FirebaseMessageEventOpenAppReceived) {
           _subscribeOnMessageOpenAppFirebase(emit: emit, data: event.data);
         }
         break;
-      case FirebaseEventSubscribeOnMessageOpenAppFirebaseCancel:
+      case FirebaseMessageEventOpenAppCancel:
         _subscribeOnMessageOpenAppFirebaseCancel(
           emit: emit,
         );
@@ -42,7 +42,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState> {
   }
 
   void _subscribeOnMessageFirebase({
-    required Emitter<FirebaseState> emit,
+    required Emitter<FirebaseMessageState> emit,
   }) async {
     // final result = await useCase();
     // result.fold(
@@ -52,23 +52,23 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState> {
   }
 
   void _subscribeOnMessageFirebaseCancel({
-    required Emitter<FirebaseState> emit,
+    required Emitter<FirebaseMessageState> emit,
   }) async {
     //await firebaseMessageDataSource.onMessageCancel();
   }
 
   void _subscribeOnMessageOpenAppFirebase(
-      {required Emitter<FirebaseState> emit,
+      {required Emitter<FirebaseMessageState> emit,
       required Map<String, dynamic>? data}) async {
     if (data != null && data.isNotEmpty) {
-      emit(FirebaseStateSubscribedOnMessageOpenAppFirebaseSucess(rota: data));
+      emit(FirebaseMessageOpenAppSucess(rota: data));
     } else {
-      emit(FirebaseStateSubscribedOnMessageOpenAppFirebaseError());
+      emit(FirebaseMessageOpenAppError());
     }
   }
 
   void _subscribeOnMessageOpenAppFirebaseCancel({
-    required Emitter<FirebaseState> emit,
+    required Emitter<FirebaseMessageState> emit,
   }) async {
     //await firebaseMessageDataSource.onMessageOpenedAppCancel();
   }

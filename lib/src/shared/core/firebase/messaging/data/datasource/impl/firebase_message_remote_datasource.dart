@@ -4,8 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_application_1/src/shared/core/firebase/messaging/data/datasource/firebase_message_datasource.dart';
 import 'package:flutter_application_1/src/shared/core/firebase/messaging/domain/entity/custom_remote_notification.dart';
-import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_bloc.dart';
-import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_event.dart';
+import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_message_bloc.dart';
+import 'package:flutter_application_1/src/shared/core/firebase/messaging/presentation/bloc/firebase_message_event.dart';
 import 'package:flutter_application_1/src/shared/helpers/debug_print/debug_print.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -16,7 +16,7 @@ class FirebaseMessageRemoteDatasource implements FirebaseMessageDataSource {
 
   static final FirebaseMessageRemoteDatasource _instance =
       FirebaseMessageRemoteDatasource._singleton(
-    FirebaseBloc.instance,
+    FirebaseMessageBloc.instance,
   );
 
   late StreamSubscription<RemoteMessage> streamSubscriptionMessage;
@@ -26,10 +26,10 @@ class FirebaseMessageRemoteDatasource implements FirebaseMessageDataSource {
 
   static FirebaseMessageDataSource get instance => _instance;
 
-  final FirebaseBloc bloc;
+  final FirebaseMessageBloc bloc;
 
   @override
-  Future<void> inicialize() async {
+  Future<void> inicialize({VoidCallback? callback}) async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       badge: true,
@@ -39,11 +39,12 @@ class FirebaseMessageRemoteDatasource implements FirebaseMessageDataSource {
 
     _localNotification = FirebaseCustomLocalNotification.instance;
 
-    onMessageListen();
+    onMessageListen(callback: callback);
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      if (message.data['forceFetch'] != null) callback?.call();
       bloc.add(
-        FirebaseEventSubscribeOnMessageOpenAppFirebase(data: message.data),
+        FirebaseMessageEventOpenAppReceived(data: message.data),
       );
     });
   }
@@ -59,10 +60,15 @@ class FirebaseMessageRemoteDatasource implements FirebaseMessageDataSource {
   }
 
   @override
-  Future<void> onMessageListen() async {
+  Future<void> onMessageListen({VoidCallback? callback}) async {
     streamSubscriptionMessage =
         FirebaseMessaging.onMessage.listen((message) async {
       RemoteNotification? notification = message.notification;
+
+      if (message.data['forceFetch'] != null) {
+        callback?.call();
+        return;
+      }
 
       if (_localNotification != null &&
           notification != null &&

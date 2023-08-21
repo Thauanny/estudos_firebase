@@ -1,21 +1,19 @@
-abstract class FirebaseState {}
+abstract class FirebaseMessageState {}
 
-class FirebaseInitial extends FirebaseState {}
+class FirebaseMessageInitial extends FirebaseMessageState {}
 
-class FirebaseExampleSucess extends FirebaseState {}
+class FirebaseMessageExampleSucess extends FirebaseMessageState {}
 
-class FirebaseExampleError extends FirebaseState {}
+class FirebaseMessageExampleError extends FirebaseMessageState {}
 
-class FirebaseStateSubscribedOnMessageFirebaseSucess extends FirebaseState {}
+class FirebaseMessageSucess extends FirebaseMessageState {}
 
-class FirebaseStateSubscribedOnMessageFirebaseError extends FirebaseState {}
+class FirebaseMessageError extends FirebaseMessageState {}
 
-class FirebaseStateSubscribedOnMessageOpenAppFirebaseSucess
-    extends FirebaseState {
+class FirebaseMessageOpenAppSucess extends FirebaseMessageState {
   final Map<String, dynamic>? rota;
 
-  FirebaseStateSubscribedOnMessageOpenAppFirebaseSucess({required this.rota});
+  FirebaseMessageOpenAppSucess({required this.rota});
 }
 
-class FirebaseStateSubscribedOnMessageOpenAppFirebaseError
-    extends FirebaseState {}
+class FirebaseMessageOpenAppError extends FirebaseMessageState {}
